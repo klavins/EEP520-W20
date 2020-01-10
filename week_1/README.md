@@ -123,20 +123,23 @@ Git setup for homework
 - Git is a version control system.
 - Git should be easy to install on any OS
 - Go to Github and make a new repo called 520-Assignments (with no README)
+- Make the repo *private*
+- Invite Victor and Rajendra to your repo 
 
 Then do
 
 ```
 mkdir 520-Assignments
-touch README.md
+cd 520-Assignments
+touch README.md                # on a PC, make an empty file called README.md (using VS Code for example)
 git init
 git add .
-git commit -m "first commit”
+git commit -m "first commit"
 git remote add origin https://github.com/yourusername/520-Assignments.git
 git push -u origin master
 // edit and/or add some files
 git add .
-git commit -m “Changed some files”
+git commit -m "Changed some files"
 git push origin master
 ```
 
@@ -238,6 +241,7 @@ Windows 10 Professional or Enterprise
 ---
 - Go to https://www.docker.com/
 - Download and run installer
+- Note: Go to UWARE/Microsoft ad upgrade from Win 10 to "Win 10 for education"
 
 Windows 10 Home and possibly Windows 8
 ---
