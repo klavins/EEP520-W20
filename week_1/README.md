@@ -159,6 +159,7 @@ Somewhere on your hard drive you should now have
         hello_c/
         hello_cpp/
         Dockerfile
+        README.md
     520-Assignments/
       README.md
 ```
@@ -303,7 +304,7 @@ UNIX: Filesystem
   - List the `/tmp` directory and find out how big the copied file is and when it was last modified
 
 UNIX: Important Places
----
+===
 - `/usr` stands for Unix System Resources
 - `/usr/lib`, `/usr/local/lib`: Command line tools, like `ls`. `bin` means binary.
 - `/usr/lib`, `/usr/local/lib`: Library files like DLLs.

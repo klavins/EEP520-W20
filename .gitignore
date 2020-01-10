@@ -3,6 +3,8 @@ build/
 html/
 latex/
 tmp/
+week_1/hello_c/main
+week_1/hello_cpp/hello
 ~*
 *.o
 *.a
