@@ -73,7 +73,7 @@ git clone https://github.com/klavins/EEP520-W20.git
 
 **Note:** Do not run this command inside `520-Assignments` or any of its subdirectories!!!
 
-To get the latest version, run the following `git` command from within the `ECEP520` directory in your host environment:
+To get the latest version, run the following `git` command from within the `ECEP520-W20` directory in your host environment:
 ```bash
 git pull origin master
 ```
@@ -597,7 +597,7 @@ TEST(Examples,AlocateAndFree) {
 ```
 Repeated failure to free the result of `join` would result in a *memory leak*, which will eventually use up all the RAM on your computer, causing a crash. These are hard to catch. Memory leaks are in fact one of the biggest issues plaguing modern software. Modern languages have *garbage collectors* to clean up unused memory, but (a) they don't work in every case and (b) they are written in C or C++ by humans who make mistakes.
 
-Strings are arrays of chars;
+Strings are arrays of chars
 ===
 Strings in C are contiguous regions of one byte memory addresses whose values are usually interpreted as characters. To declare and initialize strings, you do something like:
 ```c
