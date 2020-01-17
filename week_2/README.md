@@ -25,7 +25,10 @@ Review: The Terminal
 ===
 
 Everyone should have some kind of terminal window into which they can enter and run `git` and `docker` commands. 
-- Ideally, use VS Code's terminal
+- Ideally, use VS Code's terminal.  
+Open VS Code integrated terminal `` Ctrl+` ``.  
+Open a second terminal `` Ctrl+Shift+` ``.
+Switch between terminals using dropdown.
 - On a Mac, this is the program called `Terminal`. 
 - On a PC, this is a program called `command prompt`. 
 - On a PC, if you installed the Docker toolbox version of Docker, then you should use the Docker `Quickstart` shell. 
@@ -59,6 +62,11 @@ git add .
 git commit -m "an informative message"
 git push origin master
 ```
+Optionally use the following to add all your changed files regardless of the directory.
+```bash
+git add --all
+```
+
 
 **Note:** You can run `git` from either your host environment or the container environment that you get by executing `docker run` with `bash` (see below).
 
@@ -73,7 +81,7 @@ git clone https://github.com/klavins/EEP520-W20.git
 
 **Note:** Do not run this command inside `520-Assignments` or any of its subdirectories!!!
 
-To get the latest version, run the following `git` command from within the `ECEP520-W20` directory in your host environment:
+To get the latest version, run the following `git` command from within the `EEP520-W20` (` cd EEP520-W20/ `) directory in your host environment:
 ```bash
 git pull origin master
 ```
@@ -140,7 +148,7 @@ Most of you have encountered C at some point. We will not review all of the deta
 - `do` ... `while` loops
 - `switch` ... `case` statements
 - operators such as `*`, `+`, `-`, `%`, `||`, `&&`, `>`, `<`, `>=`, `<=`, `!`, `++`, and `--`
-- the `a ? b : c` syntax for inline if statments
+- the `a ? b : c` syntax for inline if statments. Also known as ternary operator.
 
 In this lecture, we will assume these concepts are straightforward and mainly talk about C's type system, which is the most complex aspect of C programming.
 
