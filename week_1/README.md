@@ -112,10 +112,12 @@ git clone https://github.com/klavins/EEP520-W20.git
 Each week, Prof. Klavins will add more code and README files. So you should do
 
 ```bash
+cd EEP520-W20/
 git pull origin master
 ```
 
 to get the latest code.
+
 
 Git setup for homework
 ===
@@ -129,7 +131,7 @@ Git setup for homework
 Then do
 
 ```
-mkdir 520-Assignments
+mkdir 520-Assignments           # This will be your own working directory (use "cd .." if you're still in the previous cloned folder).
 cd 520-Assignments
 touch README.md                # on a PC, make an empty file called README.md (using VS Code for example)
 git init
