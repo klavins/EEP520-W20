@@ -194,14 +194,16 @@ Google Test includes a method called "ASSERT_DEATH" which takes a statement and 
 ```c
     TEST(DynamicArray, DeathTests) {
         DynamicArray * a = DynamicArray_new();
-        ASSERT_DEATH(DynamicArray_pop(a), ".*Assertion.*");
-        ASSERT_DEATH(DynamicArray_pop_front(a), ".*Assertion.*");
+        ASSERT_DEATH(DynamicArray_pop(a), "");
+        ASSERT_DEATH(DynamicArray_pop_front(a), "");
         DynamicArray_destroy(a);
-        ASSERT_DEATH(DynamicArray_size(a), ".*Assertion.*");
+        ASSERT_DEATH(DynamicArray_size(a), "");
     }  
 ```
 
-Later in C++ we will write "Exception Handlers" to more gracefully report errors to the user. Without exceptions handlers, our other option is to do what we did with the RPN example, and have an error state that the user has to check after each operation. 
+Later in C++ we will write "Exception Handlers" to more gracefully report errors to the user. 
+
+Without exceptions handlers, our other option is to do what we did with the RPN example, and have an error state that the user has to check after each operation. 
 
 Size Getter
 ===
@@ -660,23 +662,26 @@ Exercises
 1. For the `DynamicArray` ADT, write the methods `_last` and `_first` which return the value at the end or beginning of the array, respectively. Refactor `pop` and `pop_front` to use these methods. Note that last and first should assert that the array is not empty.
 1. Write a `_copy` method that produces a copy of an array. It should return an entirely new `DynamicArray` object. Refactor `_map` to use `_copy` instead of `_new`.
 1. Write a method called `_range` that creates a new dynamic array with values as follows:
+
     ```c
     DynamicArray * a = DynamicArray_range(0, 1, 0.1); /* yields [ 0, 0.1, 0.2, ..., 1.0 ] */
     ```
 1. Implement the method `_concat`, which concatenates two arrays to produce a new array. For example,
+
     ```c
     DynamicArray * a = DynamicArray_range(0, 1, 0.1);
     DynamicArray * b = DynamicArray_range(1.1, 2, 0.1);
     DynamicArray * c = DynamicArray_concat(a, b); /* yeilds [ 0, 0.1, ..., 2.0 ] */
     ```
 1. Implement a method called `_take` that returns a sub-array of `n` elements. If the argument positive, it takes from the beginning. If it is negative it takes from the end. If there are not enough elements, the method should return as many as it can and set the rest to zero. For example:
+
     ```c
     DynamicArray * a = DynamicArray_range(1, 5, 1);
     DynamicArray * b = DynamicArray_take(a, 2);  /* yields [ 1, 2 ] */
     DynamicArray * c = DynamicArray_take(a, -2); /* yields [ 4, 5 ] */
     DynamicArray * d = DynamicArray_take(a, 7);  /* yields [ 1, 2, 3, 4, 5, 0, 0 ] */
     ```
-1. Modify the `DynamicArray` ADT so that all constructors (`_new`, `_copy`, `_range`, `_take`, `_subarray` and `_concat`) count the number of arrays that have been constructed so far. 
+1. (Extra Credit) Modify the `DynamicArray` ADT so that all constructors (`_new`, `_copy`, `_range`, `_take`, `_subarray` and `_concat`) count the number of arrays that have been constructed so far. 
     - Create a method `_num_arrays` that returns the number of allocated arrays.
     - Create another method `_destroy_all` that destroys all allocated arrays.
     - Create a method `_is_valid` that determines whether an array has been deallocated or not (i.e. whether its `buffer` is NULL).

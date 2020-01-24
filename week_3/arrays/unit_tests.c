@@ -86,11 +86,14 @@ namespace {
             DynamicArray_push(da, x);  
             x += 1.0;
         }
+        char * str = DynamicArray_to_string(da);
+        printf("ToString Example: %s\n", str);
         ASSERT_STREQ(
-            DynamicArray_to_string(da),
+            str,
             "[1.00000,2.00000,3.00000,4.00000,5.00000]"
         );
         DynamicArray_destroy(da);
+        free(str);
     }
 
     TEST(DynamicArray, Pop) {
