@@ -13,8 +13,8 @@ Problems with C Arrays
 ===
 
 Nothing makes you want an ADT more than raw C arrays. Here are some of the problems with arrays in C:
-- Nothing prevents you from getting or setting outside of the memory allcoated for the array.
-- An array does not know its own length. 
+- Nothing prevents you from getting or setting outside of the memory allcoated for the array. 
+- An array does not know its own length. (it only point to the beginning)
 - Memory allocation should not be an array method.
 
 An Array API
@@ -33,21 +33,22 @@ Following many standard abstract array types in other languages, we will impleme
 - Iterate through an array.
 - Print an array.
 
-Naming and argument conventions
+Naming and argument conventions (most important)
 ===
 
 In languages with build in ADTs, the convention is to access a method like `push` of an array `a` with the notation:
 ```c
-a.push(1)
+a.push(1) (scheme consistant)
 ```
 In C, the `dot` notation does not allow such notation. Thus, all of our methods will be declared as stand alone functions in the global namespace. To avoid naming collisions, we will use the convention of
 - Naming methods by the data type name followed by an underscore followed by the method name;
 - Putting a pointer to the datum being operated upon as the first argument of the method (except for the constructor):
 For example,
 ```c
-DynamicArray * da = DynamicArray_new();
+DynamicArray * da = DynamicArray_new(); // data type:DynamicArray;
 DynamicArray_push(da, 1);
 ```
+The purpose of the pointer is only take small reference to refer other stuff.
 
 Some Getting and Setting Tests
 ===
@@ -56,7 +57,7 @@ Some Getting and Setting Tests
 
     TEST(DynamicArray, SmallIndex) {
         DynamicArray * da = DynamicArray_new();
-        ASSERT_EQ(DynamicArray_size(da),0);
+        ASSERT_EQ(DynamicArray_size(da),0); // empty array , new array, size = 0
         DynamicArray_set(da, 0, -X);        
         DynamicArray_set(da, 3, X);
         ASSERT_EQ(DynamicArray_size(da),4);
@@ -82,7 +83,7 @@ Some Getting and Setting Tests
     }  
 ```
 
-A Push Test
+A Push Test / example code
 ===
 
 ```c
@@ -96,7 +97,7 @@ A Push Test
         }
         ASSERT_EQ(DynamicArray_size(da),40);
         printf("Push test Intermediate Result: %s\n", 
-               DynamicArray_to_string(da));
+               DynamicArray_to_string(da)); //useful method to visual. 
         while ( DynamicArray_size(da) > 0 ) {
             DynamicArray_pop(da);
         }
@@ -111,9 +112,9 @@ We do not want the user of `DynamicArray` to worry about memory allocation. We a
 
 ![memory](https://raw.githubusercontent.com/klavins/EEP520-W20/master/week_3/images/dynamic_array_arbitrary.png)
 
-- Start out with a buffer of given length, say 100. Call this the `capacity`.
+- Start out with a BUFFER of given length, say 100. Call this the `capacity`.
 - Keep track of two indices into the buffer, `origin` and `end`. 
-- Initially put `origin = end = capacity / 2`.
+- Initially put `origin = end = capacity / 2`. // without allocate the memory everything. Also, reallocate requires contiguous or freaks out.
 - As elements are added beyong `end`, change `end` to incude them.
 - If an element is pushed to the front, decement `origin`.
 - If an element is added that is beyond the capacity, increase the buffer size by 2. 
@@ -121,13 +122,13 @@ We do not want the user of `DynamicArray` to worry about memory allocation. We a
 A Dynamic Array Object
 ===
 
-We need a place to store all of the information associated with a `DynamicArray`, which we will put in  a `struct` containing the associated information:
+We need a place to store all of the information associated with a `DynamicArray`, which we will put in  a `struct` containing the associated information: (define a structure )
 ```c
 typedef struct {
     int capacity,
         origin,
         end;
-    double * buffer;
+    double * buffer; //double * pointer
 } DynamicArray;
 ```
 which appears in the header file `DynamicArray.h`. 
@@ -140,7 +141,7 @@ Although users could user this `typedef` to make new values, they would need to 
 DynamicArray * DynamicArray_new(void) {
     DynamicArray * da = (DynamicArray *) malloc(sizeof(DynamicArray));
     da->capacity = DYNAMIC_ARRAY_INITIAL_CAPACITY;    
-    da->buffer = (double *) calloc ( da->capacity, sizeof(double) ); 
+    da->buffer = (double *) calloc ( da->capacity, sizeof(double) ); //allocate
     da->origin = da->capacity / 2;
     da->end = da->origin;
     return da;
