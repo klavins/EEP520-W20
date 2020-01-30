@@ -1,5 +1,8 @@
-Week 3: Abstract Data Types
+Software Engineering For Embedded Applications
 ===
+
+Week 3: Abstract Data Types
+---
 
 An *Abstract Data Type* (ADT) is a set of values and methods or operations that operate on those values. The interface to an ADT defines only how to build values and operate on them, but not how memory is allocated or how the operations are performed. ADTs are extremely useful to programmers. They allow you to
 - avoid "reinventing the wheel" (and the explosion of many incompatible implementations of the "wheel")
