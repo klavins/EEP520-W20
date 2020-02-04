@@ -12,7 +12,7 @@ Week 4: Introduction to C++
 - getters, setters
 - the DRY principle
 - common array operations like push, pop, and map
-- a (clunky) way)to make arrays of any type
+- a (clunky) way to make arrays of any type
 
 **Today:**
 - How these ideas map onto C++
@@ -1096,7 +1096,7 @@ It is important to understand that C++ is a huge, messy language with many ways 
 
 A good book on C++ is the "C++ Primer" by Stanley Lippman. Consider reading as much of this book as you can, especially if you expect to be writing C++ programs for your job. There is a lot more covered there than is covered in that class.
 
-Exercises (due Friday Sunday Feb 10)
+Exercises
 ===
 
 1. Add methods `push`, `pop`, `push_front`, and `pop_front` to the `TypedArray` class. Write your tests first. Make sure that the arguments to these functions are declared as `const`. The pop methods should throw `std::range_error` with the message "Cannot pop from an empty array".
