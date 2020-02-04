@@ -540,6 +540,8 @@ To illustrate how to use the various STL containers, we will build a simple data
 - Finding an entry by key
 - Search the database with a lambda
 
+The code for this example is in `examples/db.cc`, `examples/db.h`, and `examples/db_tests.cc`. 
+
 DB Example: Public Methods
 ===
 
@@ -691,31 +693,31 @@ DB Example: Testing
 Here are a few tests.
 
 ```c++
-    TEST(DB,Basics) {
+TEST(DB,Basics) {
 
-        DB db;
+    DB db;
 
-        db.insert("earth", 1, 1)            
-          .insert("mars", 0.11, 1.524)
-          .insert("moon", 0.011, 1.05)
-          .insert("exoplanet one", 1, 1054.4)
-          .insert("jupiter", 318, 5.2);
+    db.insert("earth", 1, 1)            
+        .insert("mars", 0.11, 1.524)
+        .insert("moon", 0.011, 1.05)
+        .insert("exoplanet one", 1, 1054.4)
+        .insert("jupiter", 318, 5.2);
 
-        ASSERT_EQ(NAME(db.find(0)), "earth");
+    ASSERT_EQ(NAME(db.find(0)), "earth");
 
-        auto rows = db.where([](DB::Row row) { return  MASS(row) < 1; }); 
+    auto rows = db.where([](DB::Row row) { return  MASS(row) < 1; }); 
 
-        ASSERT_EQ(rows.size(), 2);
+    ASSERT_EQ(rows.size(), 2);
 
-        try {
-            db.drop(2)                        
-              .find(2);  
-            FAIL();
-        } catch ( runtime_error e ) {
-            ASSERT_STREQ(e.what(), "Could not find an entry with the given key");
-        }     
+    try {
+        db.drop(2)                        
+            .find(2);  
+        FAIL();
+    } catch ( runtime_error e ) {
+        ASSERT_STREQ(e.what(), "Could not find an entry with the given key");
+    }     
 
-    }
+}
 ```
 
 Note that the macros KEY, NAME, MASS, and DISTANCE have been defined for convenience:
