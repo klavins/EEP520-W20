@@ -729,36 +729,53 @@ Note that the macros KEY, NAME, MASS, and DISTANCE have been defined for conveni
 
 Exercises
 ===
-1. Write a function called `sort_by_magnitude` that takes a reference to a vector of doubles and sorts it with a comparison function that says that x < y if and only if the absolute value of x is less than the absolute value of y. For example, -5 would be greater than 4 because |-5| > |4|. Use the generic algorithm `sort` (which you can look up on the c++ reference we page) and a lambda expression for your comparison function. Declare this method in `utilities.h` as well, and implement it in `utilities.cc`. 
+
+Start by reading up on the standard template library [here](http://www.cplusplus.com/reference/stl/). Tuples and functionals are described under "Other" in the menu on the left.
+
+1. Write a function called `sort_by_magnitude` that takes a reference to a vector of doubles and sorts it with a comparison function that says that x < y if and only if the absolute value of x is less than the absolute value of y. For example, -5 would be greater than 4 because |-5| > |4|. Use the generic algorithm `sort` (which you can look up on the c++ reference we page) and a lambda expression for your comparison function. Declare this method in `examples.h` as well, and implement it in `examples.cc`. 
 1. Write a method 
 
     ```c++
     vector<int> primes(int n);
     ```
-    that returns all the prime numbers less than or equal to `n` using the [Sieve of Eratosthenes](https://en.wikipedia.org/wiki/Sieve_of_Eratosthenes) method. 
+    that returns all the prime numbers less than or equal to `n` using the [Sieve of Eratosthenes](https://en.wikipedia.org/wiki/Sieve_of_Eratosthenes) method. Declare this method in `examples.h` as well, and implement it in `examples.cc`. 
 1. Write a method
 
     ```c++
     vector<tuple<int,int>> twins(vector<int> nums);
     ```
-    that takes a list `nums` of integers and returns all pairs of numbers that are consecutive in the list and differ by two. For example, if you call `twins` on [2,3,5,7,11,13,17,23] you would get [(3,5),(5,6),(11,13)]. Use your function in a test to determine the number of [twin primes](https://en.wikipedia.org/wiki/Twin_prime) less than 1000. Note that we may test your code with a larger `n`.
+    that takes a list `nums` of integers and returns all pairs of numbers that are consecutive in the list and differ by two. For example, if you call `twins` on [2,3,5,7,11,13,17,23] you would get [(3,5),(5,6),(11,13)]. Use your function in a test to determine the number of [twin primes](https://en.wikipedia.org/wiki/Twin_prime) less than 1000. Note that we may test your code with a larger `n`. Declare this method in `examples.h` as well, and implement it in `examples.cc`. 
 1. Modify the `insert` method of the database example to throw a `runtime_error` with the message "Name already exists" if the user attempts to insert a planet with the same name as one already in the database.
 1. To the database example, add a method
 
-```c++
+    ```c++
     Row find_by_name(const string) const;
-```
+    ```
 that returns the row in the database whose name matches the argument to the method. It should throw a `runtime_error` with the message "Could not find row by name" if there is no such row.
 1. To the database example, add a method
-```c++
+
+    ```c++
     int size() const;
-```
+    ```
 that returns the number of entries in the database.
 1. To the database example, add a method
-```c++
+
+    ```c++
     double accumulate(function<double(const Row)> f) const;
-```
+    ```
 that evaluates `f` on every entry in the database and returns the sum of the results. For example, to find the average mass of a planet, you could write
+
+    ```c++
+    double total_mass = db.accumulate([](DB::Row row) { return MASS(row); }) / db.size();
+    ```
+
+Your homework directory should include
 ```c++
-  double total_mass = db.accumulate([](DB::Row row) { return MASS(row); }) / db.size();
+    db.h
+    db.cc
+    examples.h
+    examples.cc
+    main.cc    
+    Makefile    
+    unit_tests.cc
 ```
