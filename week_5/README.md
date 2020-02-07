@@ -759,7 +759,7 @@ Start by reading up on the standard template library [here](http://www.cplusplus
     ```c++
     DB &create_test_data(int n);
     ```
-    That inserts $n$ random entries into the database. Invent some way to create a different name for each insert (to avoid duplicate names). Names should be at least eight characters long. The mass should vary from 0.01 to 1000 and the distance from 0.1 to 10,000,000. 
+    That inserts n random entries into the database. Invent some way to create a different name for each insert (to avoid duplicate names). Names should be at least eight characters long. The mass should vary from 0.01 to 1000 and the distance from 0.1 to 10,000,000. 
 1. To the database example, add a method
 
     ```c++
