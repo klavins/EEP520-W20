@@ -390,7 +390,7 @@ vector<int> v = { 1, 2, 3, 4, 5 };
 transform(
     v.begin(),    // start of elements to transform
     v.end(),      // end of elements to transform
-    v.begin,      // start of where to put elements to transform
+    v.begin(),      // start of where to put elements to transform
     [](double x) { return x*x; }
 );
 ```
@@ -746,14 +746,14 @@ Start by reading up on the standard template library [here](http://www.cplusplus
     ```c++
     vector<tuple<int,int>> twins(vector<int> nums);
     ```
-    that takes a list `nums` of integers and returns all pairs of numbers that are consecutive in the list and differ by two. For example, if you call `twins` on [2,3,5,7,11,13,17,23] you would get [(3,5),(5,6),(11,13)]. Use your function in a test to determine the number of [twin primes](https://en.wikipedia.org/wiki/Twin_prime) less than 1000. Note that we may test your code with a larger `n`. Declare this method in `examples.h` as well, and implement it in `examples.cc`. 
+    that takes a list `nums` of integers and returns all pairs of numbers that are consecutive in the list and differ by two. For example, if you call `twins` on [2,3,5,7,11,13,17,23] you would get [(3,5),(5,7),(11,13)]. Use your function in a test to determine the number of [twin primes](https://en.wikipedia.org/wiki/Twin_prime) less than 1000. Note that we may test your code with a larger `n`. Declare this method in `examples.h` as well, and implement it in `examples.cc`. 
 1. Modify the `insert` method of the database example to throw a `runtime_error` with the message "Name already exists" if the user attempts to insert a planet with the same name as one already in the database.
 1. To the database example, add a method
 
     ```c++
     Row find_by_name(const string) const;
     ```
-that returns the row in the database whose name matches the argument to the method. It should throw a `runtime_error` with the message "Could not find row by name" if there is no such row.
+    that returns the row in the database whose name matches the argument to the method. It should throw a `runtime_error` with the message "Could not find row by name" if there is no such row.
 1. Databases are often tested with randomly generated data. Create a method
 
     ```c++
@@ -765,13 +765,13 @@ that returns the row in the database whose name matches the argument to the meth
     ```c++
     int size() const;
     ```
-that returns the number of entries in the database.
+    that returns the number of entries in the database.
 1. To the database example, add a method
 
     ```c++
     double accumulate(function<double(const Row)> f) const;
     ```
-that evaluates `f` on every entry in the database and returns the sum of the results. For example, to find the total mass of a planet, you could write
+    that evaluates `f` on every entry in the database and returns the sum of the results. For example, to find the total mass of a planet, you could write
 
     ```c++
     double total_mass = db.accumulate([](DB::Row row) { return MASS(row); });
@@ -783,8 +783,6 @@ that evaluates `f` on every entry in the database and returns the sum of the res
     double average_distance() const;
     ```
     that return the average mass and distance, respectively.
-
-1. To the database example, add a new 
 
 Your homework directory should include
 ```c++
