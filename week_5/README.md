@@ -754,6 +754,12 @@ Start by reading up on the standard template library [here](http://www.cplusplus
     Row find_by_name(const string) const;
     ```
 that returns the row in the database whose name matches the argument to the method. It should throw a `runtime_error` with the message "Could not find row by name" if there is no such row.
+1. Databases are often tested with randomly generated data. Create a method
+
+    ```c++
+    DB &create_test_data(int n);
+    ```
+    That inserts $n$ random entries into the database. Invent some way to create a different name for each insert (to avoid duplicate names). Names should be at least eight characters long. The mass should vary from 0.01 to 1000 and the distance from 0.1 to 10,000,000. 
 1. To the database example, add a method
 
     ```c++
@@ -765,11 +771,20 @@ that returns the number of entries in the database.
     ```c++
     double accumulate(function<double(const Row)> f) const;
     ```
-that evaluates `f` on every entry in the database and returns the sum of the results. For example, to find the average mass of a planet, you could write
+that evaluates `f` on every entry in the database and returns the sum of the results. For example, to find the total mass of a planet, you could write
 
     ```c++
-    double total_mass = db.accumulate([](DB::Row row) { return MASS(row); }) / db.size();
+    double total_mass = db.accumulate([](DB::Row row) { return MASS(row); });
     ```
+1. To the database example, add a method, add the methods
+
+    ```c++
+    double average_mass() const;
+    double average_distance() const;
+    ```
+    that return the average mass and distance, respectively.
+
+1. To the database example, add a new 
 
 Your homework directory should include
 ```c++
