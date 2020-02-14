@@ -844,7 +844,7 @@ t: 160.079 ms    u: 15030.2 N    v: 2.30617 m/s
 Exercises
 ===
 
-1. Develop a StopWatch class that can be used to time functions. The class should have the following methods:
+1. Develop a Stopwatch class that can be used to time functions. The class should have the following methods:
 
     ```c++
     void start();              // starts the timer
@@ -902,3 +902,23 @@ Exercises
     ( x(k) - x(k-1) ) / delta()
     ```
     as its current estimate of the derivative, where `x(k)` is the value read from the `link` channel during the current update, `x(k-1)` is the value read at the previous update, and `delta()` is the amount of time that has passed (as returned by `Process::delta()`. Figure out ways to test this process as well. If the process has not yet read two values, `value()` should return zero. 
+
+Your homework directory should contain:
+
+```
+stopwatch.cc
+stopwatch.h
+random_process.cc
+random_process.h
+filter.cc
+filter.h
+integrator.cc
+integrator.h
+derivative.cc
+derivative.h
+Makefile
+main.cc
+unit_tests.cc
+```
+
+The .cc files are optional. You can put all the implementations in the .h if you want.
