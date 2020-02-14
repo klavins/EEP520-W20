@@ -1,5 +1,5 @@
 #Compilers
-CC          := g++ -std=c++14
+CC          := g++ -std=c++17
 DGEN        := doxygen
 
 #The Target Binary Program
@@ -13,8 +13,8 @@ TARGETDIR   := ./bin
 SRCEXT      := cc
 
 #Flags, Libraries and Includes
-CFLAGS      := -fsanitize=address -ggdb
-LIB         := -lgtest -lpthread -lasan
+CFLAGS      := -ggdb
+LIB         := -lgtest -lpthread -lelma
 INC         := -I$(INCDIR)
 INCDEP      := -I$(INCDIR)
 

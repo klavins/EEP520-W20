@@ -1,5 +1,8 @@
-Week 5: The Standard Template Library
+Software Engineering For Embedded Applications
 ===
+
+Week 5: The Standard Template Library
+---
 
 So far in the course we have covered the basics of C and C++, and focused in particular on writing abstract data types and classes that encapsulate data structures and the algorithms that act upon them. In particular, last week we introduced C++ data types, classes, and templates. 
 

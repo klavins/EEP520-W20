@@ -1,5 +1,8 @@
-Week 6: Event Loop Management
+Software Engineering For Embedded Applications
 ===
+
+Week 6: Event Loop Management
+---
 
 Many embedded systems run *event loops*, which are essentially endless while loops of the following form:
 
@@ -11,6 +14,9 @@ Many embedded systems run *event loops*, which are essentially endless while loo
     end
 
 In fact, I have seen event loops in which thousands of lines of sequential code was put inside `main()` in a while loop. While such an arrangement may be acceptable for small projects, big projects with many contributors need more structure.
+
+Elma
+===
 
 Starting this week, then, we will be building an Event Loop MAnager called *elma*, which includes (or will include), support for:
 - Defining modular processes
@@ -74,13 +80,16 @@ CruiseControl cc("Control");
 elma::Channel throttle("Throttle");
 elma::Channel velocity("Velocity");
 
-m.schedule(car, HRC_DUR(milliseconds(10))) // car updates every 10ms
-  .schedule(cc, HRC_DUR(milliseconds(10))) // controller updates every 10ms
-  .add_channel(throttle)                   // register the throttle channel
-  .add_channel(velocity)                   // register the velocity channel
-  .init()                                  // initialize all processes
-  .run(HRC_DUR(milliseconds(10000)));      // run for 10s
+m.schedule(car, 10_ms)    // car updates every 10ms
+  .schedule(cc, 10_ms)    // controller updates every 10ms
+  .add_channel(throttle)  // register the throttle channel
+  .add_channel(velocity)  // register the velocity channel
+  .init()                 // initialize all processes
+  .run(10_s);             // run for 10s
 ```
+
+New Concepts
+===
 
 The design of *elma* requires a few concepts we have not yet discussed:
 
@@ -91,10 +100,12 @@ The design of *elma* requires a few concepts we have not yet discussed:
 
 We will cover these first, and then show how we use these concepts.
 
-Ratios
+Time and Ratios
 ===
 
-One of the big problems in code that uses time is that it is hard to remember (and for others to figure out) what units of time you are using at any given point in the code. This is because if you represent a time point or a duration as an integer, there is no associated information about what the units are. The [chrono](http://www.cplusplus.com/reference/chrono/) library solves this with a new templated class called `duration`, which in turn uses `ratio`. 
+One of the big problems in code that uses time is that it is hard to remember (and for others to figure out) what units of time you are using at any given point in the code. This is because if you represent a time point or a duration as an integer, there is no associated information about what the units are.
+
+The [chrono](http://www.cplusplus.com/reference/chrono/) library solves this with a new templated class called `duration`, which in turn uses `ratio`. 
 
 A `std::ratio` allows you to represent constant ratios as types. For example, to representation the ratio two thirds, you would write
 ```c++
@@ -133,9 +144,18 @@ auto z = x+y; // 20 ms
 ```
 adds the two durations together to get a new duration. Note that in this case `x` and `y` have different period sizes and counts. According to the specification, "when two duration objects of different types are involved, the one with the longest period (as determined by common_type) is converted before the operation." Thus, y is converted to `milliseconds_type` and then added to `x` to get `z`. 
 
+Zero
+===
+
 There is a special duration, zero, which can be used as follows:
 ```c++
 auto z = seconds_type::zero();
+```
+
+or
+
+```c++
+auto another_z = milliseconds_type::zero();
 ```
 
 Elma's timing needs
@@ -151,25 +171,26 @@ Clocks and Timepoints
 
 So that we know what time it is, the `chrono` library provides several clocks. We will use the `high_resolution_clock`, which on most systems will have a resolution of one nanosecond. To get the current time with the clock, you write
 ```c++
+using namespace std::chrono;
 high_resolution_clock::time_point t = high_resolution_clock::now();
 ```
 In this case `t` represents the current time, but it isn't much use unless you use it relative to some other time. For example, you can ask for the amount of time since 1970 (known as the beginning of time for computers) via:
 ```c++
 std::cout << t.time_since_epoch().count() << " ns since 1970\n";
-typedef std::chrono::duration<double,std::ratio<3600*24*365,1>> years;
+typedef duration<double,std::ratio<3600*24*365,1>> years;
 auto y = years(t.time_since_epoch());
 std::cout << y.count() << " years since 1970\n";
 ```
 which prints something like
 ```bash
-1550117813447212300 ns since 1970
-49.1539 years since 1970
+1581621645325126700 ns since 1970
+50.1529 years since 1970
 ```
 
 Tracking Program Execution
 ===
 
-This may not be of much use. More likely, you would use timepoints to mark different times in the execution of a program. For example,
+More likely, you would use time points to mark different times in the execution of a program. For example,
 ```c++
 high_resolution_clock::time_point t1, t2;
 t1 = high_resolution_clock::now();
@@ -182,11 +203,17 @@ Note that the "`-`" operator on `time_points` is defined to return a `duration`.
 Inheritance
 ===
 
-In *elma*, our users will write their own process classes that the process manager will manage. In particular, the manager will keep a list of processes and apply the same methods to all of them. There are two problems to solve with this arrangment:
-- Given that lists in C++ have to be all of the same type, how can the manager keep a list of different process types?
+In *elma*, our users will write their own process classes that the process manager will manage. 
+
+In particular, the manager will keep a list of processes and apply the same methods to all of them. There are two problems to solve with this arrangement:
+- Given that lists in C++ have to have elements of all of the same type, how can the manager keep a list of different process types?
 - How do we ensure that our users implement the interface methods that the process manager expects?
 
-In C++ and many other languages these problems are solved with *inheritance*, in which a *derived* or *child* class gets all the methods and data of a *base* or *parent* class, and then adds its own unique differences. Here, we will define an *abstract* base class called `Process` that inlcudes all of the methods that the manager expects. Crucially, we will declare the methods that inheriting classes must provide, by leaving those methods *unimplemented* in the base class.
+In C++ and many other languages these problems are solved with *inheritance*, in which a *derived* or *child* class gets all the methods and data of a *base* or *parent* class, and then adds its own unique differences.
+
+Here, we will define an *abstract* base class called `Process` that includes all of the methods that the manager expects.
+
+Crucially, we will declare the methods that inheriting classes must provide, by leaving those methods *unimplemented* in the base class.
 
 Processes in Elma
 ===
@@ -203,12 +230,12 @@ For example, here is part of the `Process` class definition in `elma`.
       virtual ~Process() = default;
 
       // Interface for derived classes
-      virtual void init() = 0;
-      virtual void start() = 0;
+      virtual void init() = 0;       // pure virtual methods that
+      virtual void start() = 0;      // must be defined by child class
       virtual void update() = 0;
       virtual void stop() = 0;
       
-      virtual string name() { return _name; }
+      virtual string name() { return _name; }  // virtual method that may be re-defined by child class
       status_type status() { return _status; }
 
       private:
@@ -218,12 +245,20 @@ For example, here is part of the `Process` class definition in `elma`.
 
   };
 ```
-The methods declared as `virtual` and set to `0` are called *pure virtual* functions and are not implemented by `Process`. Pure virtual methods must be implemented by child classes, unless they too are inteded to be virtual. If you try to construct an object of type `Process`, you will get a compiler error that looks something like:
+
+Virtual Methods
+===
+
+The methods declared as `virtual` and set to `0` are called *pure virtual* functions and are not implemented by `Process`. Pure virtual methods must be implemented by child classes, unless they too are intended to be virtual.
+
+If you try to construct an object of type `Process`, you will get a compiler error that looks something like:
 ```bash
 error: invalid cast to abstract class type 'elma::Process'
 ```
 
-This declaration of `Process` above also includes a *virtual* method `name`, which has an implementation, but can be overridden. Thus, virtual as opposed to pure virtual methods actually have implementations. Derived classes *may* override them, but do not have to.
+This declaration of `Process` above also includes a *virtual* method `name`, which has an implementation, but can be overridden.
+
+Thus, virtual as opposed to pure virtual methods actually have implementations. Derived classes *may* override them, but do not have to.
 
 Derived Classes
 ===
@@ -241,8 +276,8 @@ class BoringProcess : public Process {
 ```
 Now suppose we define two variables to refer to processs:
 ```c++
-BoringProcess p("p");
-Process * q = &p; // Ok to define virtual base class pointers
+BoringProcess p("Boring!");
+Process * q = &p; // Tell C++ to think of q as a process, not a BoringProcess
 q->update();      // Calls BoringProcess.update()
 q->name();        // Calls BoringProcess.name()
 q->status();      // Calls Process.status() (probably not what we wanted)
@@ -291,7 +326,7 @@ The keyword `inline` states that compiled code using these methods will simply r
 Process / Manager Interface
 ===
 
-The process manager needs to update the timing information and status of a process as it manipulates it. Do enable this in such a way that our user does not need to think about it, we define a version of each of the main methods that are just for the manager to use. In particular, we add to our `Process` class:
+The process manager needs to update the timing information and status of a process as it manipulates it. To enable this in such a way that our user does not need to think about it, we define a version of each of the main methods that are just for the manager to use. In particular, we add to our `Process` class:
 ```c++
 class Manager; // declare that Manager is a class, 
                // defined elsewhere
@@ -316,7 +351,7 @@ class Process {
 
 };
 ```
-The argument to `_start_` and `_update` is the duration of time since the manager was started. Now, the manager does not call the the user versions of these methods directly, but called the underscored private interface instead. 
+The argument to `_start` and `_update` is the duration of time since the manager was started. The manager does not call the the user versions of these methods directly. It calls the underscored private interface instead. 
 
 Initialization
 ===
@@ -364,6 +399,7 @@ Finally, the `_stop` method calls the
 void Process::_stop() { 
     _status = STOPPED;
     stop();
+}
 ```
 
 Other Process Methods
@@ -507,17 +543,14 @@ Manager& Manager::run(high_resolution_clock::duration runtime) {
 
 }
 ```
-This `run` method is not ideal, because it does nothing but check the condition in the `while` loop and the condition in `update` over and over, only occasionally actually calling a processes' `_update` method. Future versions of `elma` will sleep until the next update. 
+This `run` method is not ideal, because it does nothing but check the condition in the `while` loop and the condition in `update` over and over, only occasionally actually calling a processes' `_update` method. 
+
+The actual `run` method in elma will sleep until the next update. 
 
 Putting it Together
 ===
 
-Here is an example that uses all of the methods we have defined so far. First, it is convenient to define a C preprocessor macro:
-```c
-#define MS(__ms__) high_resolution_clock::duration(milliseconds(__ms__))
-```
-which allows us to write `MS(10)` instead of `high_resolution_clock::duration(milliseconds(10))` over and over.
-
+Here is an example that uses all of the methods we have defined so far. 
 ```c++
 class MyProcess : public elma::Process {
   public:
@@ -542,11 +575,11 @@ TEST(Manager,Schedule) {
   elma::Manager m;
   MyProcess p("A"), q("B");
 
-  m.schedule(p, MS(1))
-    .schedule(q, MS(5))
-    .init()
-    .run(MS(11));
-1
+  m.schedule(p, 1_ms)
+   .schedule(q, 5_ms)
+   .init()
+   .run(11_ms);
+
   ASSERT_EQ(p.num_updates(), 10);
   ASSERT_EQ(q.num_updates(), 2);
 
@@ -574,7 +607,7 @@ Interprocess Communication
 
 There are many ways that concurrent systems deal with process communication. Here are a few:
 - **Shared variables:** in some global space that all processes have access to. The downside is the lack of enforceable conventions on how variables are accessed.
-- **Events:** Processes can trigger and listen to events. Each event has associated data. Interrupts and interrupt handlers are an example. We will incorporate events into `elma` eventually.
+- **Events:** Processes can trigger and listen to events. Each event has associated data. Interrupts and interrupt handlers are an example. We will describe how elma does this later.
 - **Channels:** First in first out queues that let processes send data that other processes can subscribe to. This is common with embedded real time systems where, for example, a sensor is sending data continuously that other processes consume. 
 
 Channels
@@ -774,12 +807,12 @@ CruiseControl cc("Control");
 elma::Channel throttle("Throttle");
 elma::Channel velocity("Velocity");
 
-m.schedule(car, MS(10))
- .schedule(cc, MS(10))
+m.schedule(car, 10_ms)
+ .schedule(cc, 10_ms)
  .add_channel(throttle)
  .add_channel(velocity)
  .init()
- .run(MS(10000));
+ .run(10000_ms);
 ```
 Note that the order of the scheduling is important. We want the controller to run right after the car. If we reversed the order, the controller would be using an older sensor value. 
 
@@ -812,16 +845,18 @@ Exercises
 ===
 
 1. Develop a StopWatch class that can be used to time functions. The class should have the following methods:
+
     ```c++
     void start();              // starts the timer
     void stop();               // stops the timer
     void reset();              // sets stopwatch to zero
-    double get_minutes();      // number of minutes counted
-    double get_seconds();      // number of seconds counted
-    double get_milliseconds(); // number of milliseconds counted
-    double get_nanoseconds();  // number of nanoseconds counted
+    double get_minutes();      // number of minutes counted, as a double
+    double get_seconds();      // number of seconds counted, as a double
+    double get_milliseconds(); // number of milliseconds counted, as a double
+    double get_nanoseconds();  // number of nanoseconds counted, as a double
     ```
     All `get_` methods should return values accurate to the nanosecond. Here is an example usage:
+
     ```c++
     #define SLEEP std::this_thread::sleep_for(std::chrono::milliseconds(1500))
 
@@ -839,45 +874,31 @@ Exercises
     w.reset();
     std::cout << w.get_seconds() << "\n"; // 0.0
     ```
-    To test your method, we will use assertions that test that `get_seconds` (for example) is approximately equal to the number of seconds that the stopwatch should have counted.
-1. Overload the `latest` method for `Channel` to return the `n` most recent values in a `vector` of values. If there are fewer than `n` values, return the most that can be retrieved. The vector returned should be new, and not a reference to the channel's `deque`. 
-1. Add a new method to `Channel` called `change_capacity(int)` that adjusts the capacity of the channel. Make sure that if the user decreases the capacity size, that you thrown out all the oldest values that no longer fit in the channel.
-1. Write a process called `Random` that sends random doubles between 0 and 1 (inclusive) to a channel called `link`. Write another process called `Filter` that reads from the `link` channel and computes a filtered version of the channel. The constructor to `Filter` should take an additional set of weights to apply. Suppose the latest `n` values retrieved from `link` are `v1` ... `vn` (with `v1` the latest value). Then the filter should compute
-    ```
-    w1 * v1 + ... + wn * vn
-    ```
-    Store the filtered value in an instance variable and make it available via a method `inline double value()`. The following code might be used to assemble the system:
+    To test your method, we will use assertions that test that `get_seconds` (for example) is approximately equal to the number of seconds that the stopwatch should have counted after various sleep operations.
+1. In this exercise you will define two processes and compose them with a channel. 
+    - First, define a process called `RandomProcess` that sends random doubles between 0 and 1 (inclusive) to a channel called link. It should send a new value to the channel every time it updates. 
+    - Define another process called `Filter` that reads from the `link` channel keeps a running average (presumably in a private variable) of the last 10 numbers sent to it (if 10 numbers have not yet been received, the running average should be of the numbers received so far). Initialize the running average to 0.
+    - Add a new method to the `Filter` process called `double value()` that returns the current running average. 
+    - The following code should compile. 
+
     ```c++
     elma::Manager m;
 
-    Random r("random numbers");
-    Filter f("filter", { 0.5, 0.3, 0.2 });
+    RandomProcess r("random numbers");
+    Filter f("filter");
     elma::Channel link("link");
 
-    m.schedule(r, MS(10))
-    .schedule(f, MS(10))
-    .add_channel(link)
-    .init()
-    .run(MS(100));
+    m.schedule(r, 1_ms)
+     .schedule(f, 1_ms)
+     .add_channel(link)
+     .init()
+     .run(100_ms);
+    ```
+    To test your two processes, we will create various test process classes. For example, we might create a process that alternatively sends 0.25 and 0.75 to the `link` channel. Then we would check that after 100 steps, your `Filter` channel's `value` method returns 0.5.
+  1. Define an `Integrator` process that numerically integrates whatever values it reads from a channel called `link`. The integrator should have an initial value equal to zero. When it reads a value `v` from the `link` channel, it should add `delta() * v` to the integrated value (presumably a private variable). Add a new method to the `Integrator` process called `double value()` that returns the current integral. We will test your process by composing it with a process that sends values to the `link` channel and checks that your process is computing the integral correctly. Thus, you should write such tests as well. For example, you could make a process that outputs a constant value, and check that your integrator outputs a ramp. 
+1. Repeat the previous exercise by defining a `Derivative` process that computes a "dirty derivative". That is, it computes
 
-    // Then assert something about f.value();
-    ```
-    Make sure that if the user requests a list of weights that is longer than the capacity of the channel, that you adjust the capacity. Do this in the `init()` method of `Filter`. 
-
-    By the way, you can generate raundom numbers using the [rand](http://www.cplusplus.com/reference/cstdlib/rand/) function availale in `stdlib`. You will need to convert the integer to a double and scale it using `RAND_MAX`. 
-1. Read the documentation on the [tuple](http://www.cplusplus.com/reference/tuple/tuple/?kw=tuple) template in C++. The goal of this exercise to a method that lists information about the processes in the manager, much like the `ps waux` listing in UNIX. In particular, write a Manager method
     ```c++
-    map<string, tuple<string, double, double, int>> ps();
+    ( x(k) - x(k-1) ) / delta()
     ```
-    mapping a process name to its `_status`, its `_last_update` (in milliseconds), its latest value of `delta()` (in milliseconds), and the number of updates via `_last_update` it has had since starting. 
-    For the car and cruise control example the results might look this look like:
-    ```c++
-    auto info = m.ps();
-    std::get<0>(info["car"]); // "STOPPED"
-    std::get<1>(info["car"]); // 1234.5
-    std::get<2>(info["car"]); // 10.014
-    std::get<3>(info["car"]); // 123
-    ```
-  1. Go to the canvas discussions for the course and suggest a better name for Elma. 
-  1. Extra credit (street cred sort of credit): Add an integrator to the cruise controller.
-  1. Extra credit: Fix the main loop of the manager to sleep the appropriate amount of time.
+    as its current estimate of the derivative, where `x(k)` is the value read from the `link` channel during the current update, `x(k-1)` is the value read at the previous update, and `delta()` is the amount of time that has passed (as returned by `Process::delta()`. Figure out ways to test this process as well. If the process has not yet read two values, `value()` should return zero. 
