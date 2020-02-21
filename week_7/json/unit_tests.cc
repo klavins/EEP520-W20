@@ -1,6 +1,7 @@
 #include <gtest/gtest.h>
 #include <json/json.h>
 #include <iostream>
+#include <string>
 
 namespace {
 
@@ -16,6 +17,8 @@ namespace {
         double x = (double) j["fib"][0] + (double) j["fib"][1];
 
         ASSERT_EQ(3.14, j["pi"]);
+        ASSERT_EQ(j["fib"].size(), 7);
+        ASSERT_EQ(j["me"]["first"], "eric");
 
         auto k = R"(
           {

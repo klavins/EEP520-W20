@@ -1,8 +1,5 @@
-#include <iostream>
-#include <chrono>
-#include "elma.h"
-
-//! \file
+#include "gtest/gtest.h"
+#include "elma/elma.h"
 
 using namespace std::chrono;
 using namespace elma;
@@ -29,21 +26,24 @@ class Mode : public State {
     void exit(const Event&) {}
 };
 
-int main() {
+namespace {
+   
+    TEST(Toggle,ItWorks) {
+        Manager m;
+        Trigger trigger;
+        Mode off("off"), on("on");
+        StateMachine fsm("toggle switch");
 
-    Manager m;
-    Trigger trigger;
-    Mode off("off"), on("on");
-    StateMachine fsm("toggle switch");
+        fsm.set_initial(off)
+        .set_propagate(false)
+        .add_transition("switch", off, on)
+        .add_transition("switch", on, off);
 
-    fsm.set_initial(off)
-       .set_propagate(false)
-       .add_transition("switch", off, on)
-       .add_transition("switch", on, off);
+        m.schedule(trigger, 1_ms)
+        .schedule(fsm, 5_ms) // Doesn't matter since mode has empty update()
+        .init()
+        .run(11_ms);
 
-    m.schedule(trigger, 1_ms)
-     .schedule(fsm, 5_ms) // Doesn't matter since mode has empty update()
-     .init()
-     .run(11_ms);
-     
+    }
+
 }

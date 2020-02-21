@@ -1,5 +1,5 @@
 #Compilers
-CC          := g++ -std=c++14
+CC          := g++ -std=c++17
 DGEN        := doxygen
 
 #The Target Binary Program
@@ -7,25 +7,25 @@ TARGET      := test
 
 #The Directories, Source, Includes, Objects, Binary and Resources
 SRCDIR      := .
-INCDIR      := ..
+INCDIR      := .
 BUILDDIR    := ./build
 TARGETDIR   := ./bin
 SRCEXT      := cc
 
 #Flags, Libraries and Includes
-CFLAGS      := -fsanitize=address -ggdb
-LIB         := -L../lib -lgtest -lpthread -lasan -lelma
+CFLAGS      := -ggdb
+LIB         := -lgtest -lpthread -lelma
 INC         := -I$(INCDIR)
 INCDEP      := -I$(INCDIR)
-ELMALIB		:= ../lib/libelma.a
 
 #Files
+DGENCONFIG  := docs.config
 HEADERS     := $(wildcard *.h)
 SOURCES     := $(wildcard *.cc)
 OBJECTS     := $(patsubst %.cc, $(BUILDDIR)/%.o, $(notdir $(SOURCES)))
 
 #Defauilt Make
-all: directories $(TARGETDIR)/$(TARGET)
+all: directories $(TARGETDIR)/$(TARGET) 
 
 #Remake
 remake: cleaner all
@@ -34,6 +34,13 @@ remake: cleaner all
 directories:
 	@mkdir -p $(TARGETDIR)
 	@mkdir -p $(BUILDDIR)
+
+# Make the documentation
+$(DGENCONFIG):
+	$(DGEN) -g $(DGENCONFIG)
+
+docs: $(SOURCES) $(HEADERS) $(DGENCONFIG)
+	$(DGEN) $(DGENCONFIG)
 
 #Clean only Objects
 clean:
@@ -49,7 +56,7 @@ $(TARGETDIR)/$(TARGET): $(OBJECTS) $(HEADERS)
 	$(CC) $(CFLAGS) -o $(TARGETDIR)/$(TARGET) $^ $(LIB)
 
 #Compile
-$(BUILDDIR)/%.o: $(SRCDIR)/%.$(SRCEXT) $(HEADERS) $(ELMALIB)
+$(BUILDDIR)/%.o: $(SRCDIR)/%.$(SRCEXT) $(HEADERS)
 	$(CC) $(CFLAGS) $(INC) -c -o $@ $<
 
 .PHONY: directories remake clean cleaner apidocs $(BUILDDIR) $(TARGETDIR)

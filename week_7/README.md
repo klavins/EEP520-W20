@@ -6,7 +6,7 @@ Week 7: Events and Finite State Machines
 
 Last week we built a simple process manager that included an abstract base class, `Process`, from which users can derive their own processes. We also defined a `Channel` class that enabled processes to send streams of values to each other.
 
-![Elma Architecture](https://raw.githubusercontent.com/klavins/EEP520-W20/master/week_7/images/elma-structure.png)
+<img src='https://raw.githubusercontent.com/klavins/EEP520-W20/master/week_7/images/elma-structure.png' width=70%>
 
 This week we will
 - Upgrade the `Channel` class to enable sending *JSON* data, instead of just `double` values.
@@ -15,6 +15,21 @@ This week we will
 - Improve the test coverage of Elma.
 
 The resulting structure looks like the above. Orange indicates classes that we will define today.
+
+Elma Changes
+===
+
+Note that I pushed a minor change to elma that you will need to complete this week's homework. Make sure you restart your docker container with something like 
+
+```bash
+docker pull klavins/elma:latest
+```
+
+which should download the latest version from DockerHub, before doing
+
+```bash
+docker run -v $PWD:/source -it klavins/elma:latest bash
+```
 
 JSON
 ===
@@ -31,32 +46,30 @@ Some examples of where JSON is used include
 Data Representation in JSON
 ===
 
-JSON allows a broad range of data to be represented as strings of characters. For example,
+Example:
 ```json
 {
     "tas": [
         {
-            "first": "Justin",
-            "last": "Vrana"
+            "first": "Victor",
+            "last": "Cannestro"
         },
         {
-            "first": "Kung-Hung",
-            "last": "Lu",
-            "aka": "Henry"
+            "first": "Rajendra",
+            "last": "Hawthwar"
         }
     ],
     "weeks": [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 ],
-    "version": 2.0
+    "version": 3.0
 }
 ```
-In a JSON string, you can represent
-- Atomic values
+- ***Atomic*** values
     - strings delimited by double quotes
     - numbers, with or without decimals
     - true and false
     - null
-- Arrays of values atomic values, objects and/or otjer arrays, delimited by [ and ]. 
-- Objects with key value pairs, where values are atomic, objects, or arrays
+- ***Arrays*** of values atomic values, objects and/or otjer arrays, delimited by [ and ]. 
+- ***Objects*** with key value pairs, where values are atomic, objects, or arrays
 
 Supporting JSON
 ===
@@ -95,7 +108,7 @@ Using the elma container, you can use the JSON library simply by including it.
 using nlohmann::json; 
 ```
 
-The JSON C++ Library
+A JSON C++ Library
 ===
 
 The JSON C++ library we will use is described in detail [here](https://github.com/nlohmann/json). For now, we will use a subset of the library's capabilities, mainly defining and accessing JSON values.
@@ -138,7 +151,7 @@ json j = {
     { 
         "version", 2.0
     }
-}
+};
 ```
 
 Serializing a String
@@ -170,7 +183,7 @@ C++ exception with description "[json.exception.type_error.302] type must be num
 Downsides of JSON
 ===
 
-This brings up one of the downsides of using JSON. With C++ you normally cannot even compile code that tries to assign a value of one type to an incompatible value of another time. But with JSON you can. If you would like to be very explicit, you can instead do
+This brings up one of the downsides of using JSON. With C++ you normally cannot even compile code that tries to assign a value of one type to an incompatible value of another type. But with JSON you can. If you would like to be very explicit, you can instead do
 ```c++
 double k = x["k"].get<double>();
 ```
@@ -182,22 +195,21 @@ Upgrading Channels to use JSON
 The JSON library is incredibly easy to use. To modify the `Channel` object, we literally replace the keyword `double` with the type `json`. In the header file:
 ```c++
 class Channel {
-
-    ...
-
+    //
     public:
     Channel& send(json);
-
-    ...
-
+    json latest();
+    json earliest();
+    //
     private:
     deque<json> _queue;
-
-    ...
-
+    //
 };
 ```
-and in the implementation file
+Implementation 
+===
+
+In the implementation file
 ```c++
 Channel& Channel::send(json value) {
     _queue.push_front(value);
@@ -206,37 +218,16 @@ Channel& Channel::send(json value) {
     }
     return *this;
 }
-```
-And example of the use of the new channel can be found in `ECEP520/week_7/elma/examples/feedback.cc`, which is a rewrite of the cruise control example from last week.
 
-New Directory Structure
-===
+json Channel::latest() {
+    if ( _queue.size() == 0 ) {
+        throw Exception("Tried to get the latest value in an empty channel.");
+    }
+    return _queue.front();
+}
 
-While we are on the subject of examples, we have changed the structure of the directories in the code base. We now have:
+// etc
 ```
-/elma
-    channel.cc
-    channel.h
-    ...
-    Makefile
-    ...
-    /examples
-        basic.cc
-        feedback.cc
-        Makefile
-        bin
-            basic
-            feedback
-    /test
-        channel.cc
-        event.cc
-        ...
-        main.cc
-        Makefile
-        bin
-            test
-```
-There is a `Makefile` in the examples directory and another in the test directory. The examples directory makes a separate executable for each example. The tests are named after the class they are intended to test. The main file runs every test defined in any of the test files.
 
 Events
 ===
@@ -259,16 +250,26 @@ class Event {
 ```
 We will expand upon this definition later, but for now, an event is little more than a container for a JSON value.
 
+Event Methods
+===
+
 To use an event, processes need to be able to 
 - **emit** an event, giving it a name in the process. The result should be that the manager broadcasts the occurence of the event to any other processes that are watching for it.
 - **watch** for events with a specific name, responding to them with user defined functions.
 
-Thus, to the `Manager` we add a private data member
+Keeping Track of Events in the Manager
+===
+
+To the `Manager` we add a private data member
 ```c++
 // manager.h
 private:
 map<string, vector<std::function<void(Event&)>>> event_handlers;
 ```
+
+Watching Events
+===
+
 Next we add a `watch` method to Manager and a wrapper for it to `Process`.
 ```c++
 // manager.cc
@@ -282,15 +283,23 @@ void Process::watch(string event_name, std::function<void(Event&)> handler) {
     _manager_ptr->watch(event_name, handler);
 }
 ```
+
+Where You Should use Watch
+===
+
 Typically, processes should set up event handlers in their `init` methods. For example, you could do
 ```c++
 // Cruise control process watching for desired speed events from the driver
-void init() {
+void CruiseControl::init() {
     watch("desired speed", [this](Event& e) {
         desired_speed = e.value();
     });
 }
 ```
+This method would be used by a `CruiseControl` process to respond to an event changing its desired speed. Note that the lambda sent to the event captures `this`, so that the variable `desired_speed` that is private to the CruiseControl object can be accessed. 
+
+Emitting an Event
+===
 
 To emit an event, we define a `Manager` method and a `Process` wrapper that searches the event handler list for handlers that correspond to the emitted event.
 ```c++
@@ -311,21 +320,34 @@ void Process::emit(string event_name, const Event& event) {
 }
 ```
 
-A process would typically emit an event in its `start`, `update`, or `stop` method. For example,
+Example Event Emission
+===
+
+A process would typically emit an event in its `start`, `update`, or `stop` method. 
+
+For example, suppose you wanted to simulate a driver with a `Driver` process. 
 ```c++
-void update() {
+void Driver::start() {
     emit(Event("desired speed", 40));
 }
 ```
 
+When this process is started, it will emit the event, which the cruise control process will respond to.
+
+Example
+===
+
 See `examples/driving.cc` for a worked out example. A plot of the velocity over time from that example is here:
 
-![Cruise Control with Driver](images/cruise-control-output.png)
+<img src='https://raw.githubusercontent.com/klavins/EEP520-W20/master/week_7/images/cruise-control-output.png' width=70%>
 
 Event Propagation
----
+===
 
 The way we currently have event manager defined, every handler that watches for events with a particular name will get run every time an event with that name is emitted. This may not be desired in some cases. For example, you may want that certain events take priority and prevent other handlers from being run. To get this behavior, we introduce *event propagation*. 
+
+Changing Event Propagation
+===
 
 To the event class, we add a Boolean value to keep track of whether the event should be propagated.
 ```c++
@@ -340,6 +362,10 @@ inline bool propagate() const { return _propagate; }
 inline void stop_propagation() { _propagate = false; }
 inline void reset() { _propagate = true; }
 ```
+
+Managing Propagation
+===
+
 In the manager, we can then prevent events from propagating if the-r `_propgate` instance variable is set to true as follows:
 ```c++
 Manager& Manager::emit(const Event& event) {
@@ -354,25 +380,32 @@ Manager& Manager::emit(const Event& event) {
     return *this;
 }
 ```
-This capability will become particularly useful in the next section.
+
+Using Event Propagation
+===
+
+This capability will become particularly useful in the next section on finite state machines. 
 
 Finite State Machines
 ===
 
 A finite state machine, or FSM, is a fundamental object in embedded systems. They consist of a set of states and a set of labelede transitions between states. Here is a simple example of a toggle switch.
 
-<img src="images/toggle-switch.png" width="400"></image>
+<img src='https://raw.githubusercontent.com/klavins/EEP520-W20/master/week_7/images/toggle-switch.png' width=70%>
 
 There are two states, `Off` and `On`. The FSM moves from one state to the other, every time a 'switch' input is recieved. 
 
+Microwave Example
+===
+
 Another example is a microwave oven controller, which is designed to accept user input and keep the user from doing something bad (like tuning on the microwave when the door is open).
 
-<img src="images/microwave.png" width="500"></image>
+<img src="https://raw.githubusercontent.com/klavins/EEP520-W20/master/week_7/images/microwave.png" width="500"></image>
 
 To implement FSMs in Elma, we will add three new classes: `State`, `Transition`, and `StateMachine`. The first is an abstract base class that users will override with their own state definitions. Transition is a container class that holds a source and desintation state and an event name. StateMachine will inherit from `Process` and will manager transitions.
 
 States
----
+===
 
 To represent states, we add the new class:
 ```c++
@@ -399,7 +432,7 @@ class State {
 ```
 
 Transitions
----
+===
 
 To represent transitions, we add the new class:
 ```c++
@@ -424,7 +457,7 @@ class Transition {
 ```
 
 State Machines
----
+===
 
 To represent state machines, we add the new class
 ```c++
@@ -454,6 +487,9 @@ class StateMachine : public Process {
 };
 ```
 
+State Machine Initialization
+===
+
 The class keeps track of the initial and current states as well as keeping a list of transitions. Since it inherits from `Process` and needs its `init`, `start`, `update`, and `stop` methods defined. The `init` method loops through all transitions and watches for events that trigger them.
 ```c++
 void StateMachine::init() {
@@ -472,6 +508,10 @@ void StateMachine::init() {
     }
 }
 ```
+
+State Machine Starting and Updating
+===
+
 The start method sets the current state to the initial state
 ```c++
 void StateMachine::start() {
@@ -487,23 +527,30 @@ void StateMachine::update() {
 ```
 
 Example: Binary Counter
----
+===
 
-See `examples/toggle-switch.cc` for how to implement the toggle switch above.
+See the `toggle-switch/` directory for how to implement the toggle switch.
+
+<img src='https://raw.githubusercontent.com/klavins/EEP520-W20/master/week_7/images/toggle-switch.png' width=40%>
 
 Example: Microwave Oven
----
+===
 
-See `examples/microwave.cc` for how to implement the toggle switch above.
+See the `microwave/` directory for how to implement the microwave oven.
+
+<img src="https://raw.githubusercontent.com/klavins/EEP520-W20/master/week_7/images/microwave.png" width="500"></image>
 
 Documentation with Doxygen
----
+===
 
 The documentation for Elma is current at [https://klavins.github.io/ECEP520/index.html](https://klavins.github.io/ECEP520/index.html). It is automatically generated by first running Doxygen with
 ```bash
 make docs
 ```
 and then copying the contents of the resulting `html` directory to `ECEP520/docs`. Github has a feature called *Github Pages* that allows you to serve web pages from a repository. To set it up, I went to the ECEP520 repository, clicked settings, scrolled down to *Github Pages*, and chose `/docs` as the source directory.
+
+Documenting a Class
+===
 
 To document a class, you add comments to the code with the special syntax
 ```c++
@@ -514,14 +561,21 @@ class MyClass {
 
 };
 ```
+
+Documenting a Method
+===
+
 To document a method, you do something like
 ```c++
 //! Compute something important
-//! \param x A desription of the first argument
+//! \param x A description of the first argument
 //! \param s A description of the second argument
 //! \return The value of the important thing computed
 int f(int x, std::string s);
 ```
+
+Adding a Code Example
+===
 
 To add a code example to a comment, do
 ```c++
@@ -530,36 +584,57 @@ To add a code example to a comment, do
 //! @endcode
 ```
 
-See, for example, the comments in `event.h` and `manager.cc`. 
+For more examples
+===
+
+See, for example, the comments the [elma code base](https://github.com/klavinslab/elma) which compiles to look like [this](http://klavinslab.org/elma/).
+
+
+
 
 Exercises
 ===
 
-1. Create a `Stopwatch` process the watches for events "start", "stop", and "reset". Note, this process is *not* supposed to be a StateMachine. Add to it a method called `seconds()` that gets the stopwatch's current value in seconds as a double. Also create a `StopWatchUser` process that emits a sequence of events that use the stopwatch. Please define this code in a new directory called `homework` in files `homework/stopwatch.h` and `homework/stopwatch.cc`. `Stopwatch` and `StopWatchUser` should be defined as classes that inherit from `Process`. We likely will not test `StopWatchUser` but please work on it regardless. File structure, minimal starter code, and a unit_test file has been provided on Canvas. See the announcement for more details.
-
 1. Define a `StateMachine` called 'Robot' that models the following diagram:
 
-    <img src="images/robot.png" width="620"></image>
+    <img src="https://raw.githubusercontent.com/klavins/EEP520-W20/master/week_7/images/robot.png" width="620"></image>
 
-    Please define this code as a class called `Robot` in `homework/robot.h` (optionally `robot.cc` if you want). You will need to inherit a State and StateMachine classes. Your new State class used to hold robot states is should only internally be `Robot`, so it does not matter what it is named. Initialization of a `Robot` should initialize all of the states and transitions. You should be able to initialize your robot via the following:
+    Please define this code as a class called `Robot` in `homework/robot.h` (optionally `robot.cc` if you want). You will need to inherit a State and StateMachine classes a lot like the `Microwave` example does. Make a `Mode` class for states. Use only this one state class for all our states, like with the `ToggleSwitch` example. Initialization of a `Robot` should set up all of the states and transitions. You should be able to initialize and test your robot via the following:
     
     ```
-    Robot politebot = Robot("What a very nice robot.");
+    Robot robot = Robot("What a very nice robot.");
     
     Manager m;
-    m.schedule(politebot, 10_ms)
-    .init()
-    .start();
-    
-    std::cout << robot.current().name(); << std::endl;
+     m.schedule(robot, 10_ms)
+      .init()
+      .start();
+
+    EXPECT_EQ(robot.current().name(), "Wander");
     m.emit(Event("intruder detected"));
-    std::cout << "Pardon me sir, I believe there is an INTRUDER";
-    std::cout << robot.current().name() << std::endl;
+    EXPECT_EQ(robot.current().name(), "Make Noise;
+    m.emit(Event("proximity warning"));
+    EXPECT_EQ(robot.current().name(), "Evade");
+    m.emit(Event("battery full"));
+    EXPECT_EQ(robot.current().name(), "Evade);      
+
+    /// ETC
+        
+
     ```
 
-    File structure, starter code, and a unit_test file has been provided on Canvas. See the announcment for more details. 
+1. Create a new class derived from `StateMachine` called `BetterStateMachine` that has the one extra method 
 
-1. Create a `to_json()` method for the `StateMachine` class that returns a representation of a StateMachine as a json object. For example, in the `examples/binary.cc` example, `fsm.to_json().dump()` would return the following. 
+    ```json
+    json to_json() const;
+    ```
+    This method should return a representation of a `StateMachine` as a json object. For example, in the `toggle-switch` example, if we had written
+    
+    ```json
+    BetterStateMachine fsm("toggle switch");
+    // etc.
+    ```
+    then `fsm.to_json().dump()` would return something like the following.
+
     ```json
     {
         "name": "binary counter",
@@ -578,9 +653,13 @@ Exercises
         ]
     }
     ```
-    The order of the elements does not matter.
-1. Add an optional, positive integer values priority to the manager's watch method:
-```c++
-Manager& watch(string event_name, std::function<void(Event&)> handler, int priority=0);
-```
-Note, this version of watch should replace the existing version. It uses a [default argument value](https://en.cppreference.com/w/cpp/language/default_arguments). Make it so that event handlers with higher priority are guaranteed to be run before event handlers with lower priority. Handlers with equal priority run in an unspecified order.
+    The order of the elements does not matter. We might test your code by building something like the `Microwave` example, but inheriting from `BetterStateMachine` and then checking that your method returns a `json` object with the correct structure. For example,
+
+    ```c++
+    json j = microwave.to_json();
+    ASSERT_EQ(j["name"], "binary counter");
+    ASSERT_EQ(j["state"].size(), 2);
+    // ETC.
+    ```
+    Note that your `to_json` method is allowed to and will need to access the `protected` variables `_transitions` and `_initial`. 
+
