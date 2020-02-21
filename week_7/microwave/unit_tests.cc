@@ -11,9 +11,7 @@ namespace {
     TEST(Microwave, Safety) {
 
         Manager m;
-
         Power power;      
-
         Microwave microwave;
 
         m.schedule(power, 10_ms)

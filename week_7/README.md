@@ -12,7 +12,6 @@ This week we will
 - Upgrade the `Channel` class to enable sending *JSON* data, instead of just `double` values.
 - Add a new inter-process communication `Event` class.
 - Add a set of classes for defining *Finite State Machines*.
-- Improve the test coverage of Elma.
 
 The resulting structure looks like the above. Orange indicates classes that we will define today.
 
@@ -619,7 +618,6 @@ Exercises
 
     /// ETC
         
-
     ```
 
 1. Create a new class derived from `StateMachine` called `BetterStateMachine` that has the one extra method 
@@ -653,11 +651,11 @@ Exercises
         ]
     }
     ```
-    The order of the elements does not matter. We might test your code by building something like the `Microwave` example, but inheriting from `BetterStateMachine` and then checking that your method returns a `json` object with the correct structure. For example,
+    The order of the elements does not matter. We might test your code by building something like the `ToggleSwitch` example, but inheriting from `BetterStateMachine` and then checking that your method returns a `json` object with the correct structure. For example,
 
     ```c++
-    json j = microwave.to_json();
-    ASSERT_EQ(j["name"], "binary counter");
+    json j = toggle_switch.to_json();
+    ASSERT_EQ(j["name"], "toggle switch");
     ASSERT_EQ(j["state"].size(), 2);
     // ETC.
     ```
