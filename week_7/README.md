@@ -601,7 +601,7 @@ Exercises
     Please define this code as a class called `Robot` in `homework/robot.h` (optionally `robot.cc` if you want). You will need to inherit a State and StateMachine classes a lot like the `Microwave` example does. Make a `Mode` class for states. Use only this one state class for all our states, like with the `ToggleSwitch` example. Initialization of a `Robot` should set up all of the states and transitions. You should be able to initialize and test your robot via the following:
     
     ```
-    Robot robot = Robot("What a very nice robot.");
+    Robot robot("What a very nice robot.");
     
     Manager m;
      m.schedule(robot, 10_ms)
