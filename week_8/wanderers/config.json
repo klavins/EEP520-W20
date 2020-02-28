@@ -1,0 +1,131 @@
+{
+
+    "name": "Robot World",
+    "ip": "0.0.0.0",
+    "port": 8765,
+
+    "agents": [
+        {
+            "definition": "defs/wanderer.json",
+            "style": { "fill": "lightgreen", "stroke": "black" },
+            "position": {
+                "x": 100, 
+                "y": 0, 
+                "theta": 0
+            }
+        },
+        {
+            "definition": "defs/wanderer.json",
+            "style": { "fill": "lightgreen", "stroke": "black" },
+            "position": {
+                "x": -100, 
+                "y": 0, 
+                "theta": 1
+            }
+        }, 
+        {
+            "definition": "defs/wanderer.json",
+            "style": { "fill": "lightgreen", "stroke": "black" },
+            "position": {
+                "x": 0, 
+                "y": 100, 
+                "theta": 2
+            }
+        },    
+        {
+            "definition": "defs/wanderer.json",
+            "style": { "fill": "lightgreen", "stroke": "black" },
+            "position": {
+                "x": 0, 
+                "y": -100, 
+                "theta": 3
+            }
+        },   
+        {
+            "definition": "defs/wanderer.json",
+            "style": { "fill": "lightgreen", "stroke": "black" },
+            "position": {
+                "x": 50, 
+                "y": -100, 
+                "theta": 3
+            }
+        },   
+        {
+            "definition": "defs/wanderer.json",
+            "style": { "fill": "lightgreen", "stroke": "black" },
+            "position": {
+                "x": 50, 
+                "y": 100, 
+                "theta": 3
+            }
+        },                                       
+        {
+            "definition": "defs/block.json",
+            "style": { "fill": "orange", "stroke": "black" },
+            "position": {
+                "x": -200, 
+                "y": 0, 
+                "theta": 0
+            }
+        },                       
+        {
+            "definition": "defs/block.json",
+            "style": { "fill": "orange", "stroke": "black" },
+            "position": {
+                "x": 0, 
+                "y": 0, 
+                "theta": 0
+            }
+        },                       
+        {
+            "definition": "defs/block.json",
+            "style": { "fill": "orange", "stroke": "black" },
+            "position": {
+                "x": 200, 
+                "y": 0, 
+                "theta": 0
+            }
+        }                                       
+    ],
+
+    "statics": [
+        {
+            "style": { "fill": "gray", "stroke": "none" },
+            "shape": [
+                { "x": -350, "y": -200 },
+                { "x": -350,  "y": 200 },
+                { "x": -340,  "y": 200 },
+                { "x": -340, "y": -200 }
+            ]
+        },
+        {
+            "style": { "fill": "gray", "stroke": "none" },
+            "shape": [
+                { "x": 350, "y": -200 },
+                { "x": 350,  "y": 200 },
+                { "x": 340,  "y": 200 },
+                { "x": 340, "y": -200 }
+            ]
+        },
+        {
+            "style": { "fill": "gray", "stroke": "none" },
+            "shape": [
+                { "x": -350, "y": 200 },
+                { "x": 350,  "y": 200 },
+                { "x": 350,  "y": 190 },
+                { "x": -350, "y": 190 }
+            ]
+        },
+        {
+            "style": { "fill": "gray", "stroke": "none" },
+            "shape": [
+                { "x": -350, "y": -200 },
+                { "x": 350,  "y": -200 },
+                { "x": 350,  "y": -190 },
+                { "x": -350, "y": -190 }
+            ]
+        }       
+
+    ]
+
+}
