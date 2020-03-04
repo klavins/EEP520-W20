@@ -8,3 +8,4 @@ week_1/hello_cpp/hello
 ~*
 *.o
 *.a
+*.so
