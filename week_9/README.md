@@ -1,7 +1,7 @@
 Software Engineering For Embedded Applications
 ===
 
-Week 9: Projects, Networking, and the Cloud
+Week 9: Projects, Networking, Project
 ---
 
 Projects
@@ -455,12 +455,24 @@ TEST(Client,ProcessInterface) {
 Enviro New Features Coming Soon
 ===
 
+Definitely
+---
+- Documentation
+- get_x, get_y, get_angle instead of chipmunk
+- Return identity with distance
 - Respond to keyboard events
 - Have an omni directional robot
 - Other modes of control (path following, for example)
 - Have non-physical objects (like buttons)
 - Have invisible, non-physical objects (like a game controller that keeps the score or responds to collision events)
-- The ability to dynamically spawn new agents on the fly
+- The ability to dynamically spawn new and delete agents on the fly
+
+Maybe
+---
+- Change size or appearance of agents
+- Change the center of the view and possibly the magnification
+- Allow multiple users logged in from different clients
+- Add words and other decorations
 
 Brainstorm
 ===
