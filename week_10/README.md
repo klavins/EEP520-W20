@@ -7,6 +7,8 @@ Week 10: Projects and Enviro
 Project Rubric
 ===
 
+Goal: Be creative. Make a fun, engaging, and or informative simulation or game. 
+
 Projects are due Wednesday March 18 at 11:59pm.
 
 | Points | Description |
@@ -30,7 +32,40 @@ Projects are due Wednesday March 18 at 11:59pm.
 
 Note: Homeworks 1-7 are each worth 1/9th of your grade. And the project is worth 2/9ths of the grade. 
 
+Enviro Examples
+===
 
+Examples in the [enviro github repo](https://github.com/klavinslab/enviro): 
+
+- ***avoiders***: Illustrates sensors, multiple copies of the same agent, decorations, and labels. 
+
+- ***new_agent_test***: A simple demonstration of dynamically creating a new agent.
+
+- ***platformer***: Turns off rotations and demonstrates how to simulate gravity, jumping, and left/right movement. Uses sensors, collision handlers, and keyboard events.  
+
+- ***teleporter***: Move an agent to an arbitrary location. Reponds to keyboard events.
+
+- ***wanderers***: Simpler version of avoiders demo.
+
+- ***multiuser***: Demonstrates how to have multiple players all logged in with separate web browsers. Also shows non-interactive and invisible elements.  
+- ***omni***: Shows a few omni-directional agents moving and teleporting.
+
+- ***virus***: Demonstrates agent creation, and removal. Uses collision handlers and attachment constraints. 
+
+New in 1.1
+===
+
+New in 1.2
+===
+
+New in 1.3
+===
+
+New in 1.4
+===
+
+New in 1.5
+===
 
 
 
