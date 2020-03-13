@@ -7,7 +7,7 @@ Week 10: Projects and Enviro
 Project Rubric
 ===
 
-Goal: Be creative. Make a fun, engaging, and or informative simulation or game. 
+Goal: Be creative. Make a fun, engaging, and or informative simulation or game. Learn some C++ and multi-agent systems in the process. 
 
 Projects are due Wednesday March 18 at 11:59pm.
 
@@ -366,9 +366,3 @@ We can adapt to life and work with a pandemic!
 Someday you'll tell you grandkids about it!
 
 <img src="https://upload.wikimedia.org/wikipedia/commons/6/6f/Keep-calm-and-carry-on-scan.jpg" height=50%>
-
-
-
-
-
-
